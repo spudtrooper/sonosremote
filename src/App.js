@@ -2,9 +2,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import BootstrapButton from "react-bootstrap/Button";
-import { VolumeDownFill, VolumeUpFill, VolumeMuteFill, Back, InfoSquareFill, RewindFill, PlayFill, PauseFill, FastForwardFill, StopFill, TvFill } from "react-bootstrap-icons";
+import Card from 'react-bootstrap/Card';
+import {
+  VolumeDownFill, VolumeUpFill, VolumeMuteFill, Back,
+  InfoSquareFill, RewindFill, PlayFill, PauseFill, FastForwardFill,
+  StopFill, TvFill,
+} from "react-bootstrap-icons";
 import ReactBootstrapSlider from "react-bootstrap-slider";
 import "./App.css";
+import { Link } from "react-router";
 
 const App = () => {
 
@@ -21,6 +27,13 @@ const App = () => {
     devices: [],
     volume: 0,
   });
+
+  const defaultDisplayedDeviceObj = {
+    json: "",
+    device: {},
+  };
+
+  const [displayedDeviceObj, setDisplayedDeviceObj] = useState(defaultDisplayedDeviceObj);
 
   useEffect(() => {
     const getDevices = async () => {
@@ -46,7 +59,10 @@ const App = () => {
   const showDevice = (device) => {
     const { uuid } = device;
     axios.get(apiServer + "/api/device", { params: { uuid } })
-      .then((info) => alert(JSON.stringify(info, null, 2)));
+      .then(({ data }) => {
+        const json = JSON.stringify(data, null, 2);
+        setDisplayedDeviceObj({ json, device });
+      });
   };
 
   const Button = ({ onClick, children }) =>
@@ -127,9 +143,6 @@ const App = () => {
       <Button onClick={() => send(device, "/api/device/stop")}>
         <StopFill />
       </Button>
-      <Button onClick={() => send(device, "/api/device/tv")}>
-        <TvFill />
-      </Button>
       <Button onClick={() => send(device, "/api/device/play")}>
         <PlayFill />
       </Button>
@@ -137,6 +150,36 @@ const App = () => {
         <FastForwardFill />
       </Button>
     </div>;
+
+  const DisplayedDevice = ({ device }) => {
+    const
+      srvHost = device?.coordinator?.renderingcontrolservice?.host,
+      srvPort = device?.coordinator?.renderingcontrolservice?.port || 80,
+      relScpUrl = device?.coordinator?.renderingcontrolservice?.scpUrl,
+      scpUrl = srvHost && relScpUrl && `http://${srvHost}:${srvPort}${relScpUrl}`;
+    return (
+      <Card className="CodeHeader">
+        <Card.Title>{device.name}</Card.Title>
+        <Card.Subtitle>{device.host}</Card.Subtitle>
+        <Button
+          variant="primary"
+          onClick={() => setDisplayedDeviceObj(defaultDisplayedDeviceObj)}>
+          Close
+        </Button>
+        <Card.Text>
+          <ul>
+            {scpUrl &&
+              <li>
+                <Link href={scpUrl} target="_blank">scpUrl</Link>
+              </li>}
+          </ul>
+          <div className="Code">
+            {displayedDeviceObj.json}
+          </div>
+        </Card.Text>
+      </Card>
+    );
+  };
 
 
   return (
@@ -149,6 +192,8 @@ const App = () => {
           <Devices />
         </div>}
       </div>
+      {displayedDeviceObj.json &&
+        <DisplayedDevice device={displayedDeviceObj.device} />}
     </div>
   );
 };

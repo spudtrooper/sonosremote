@@ -13,3 +13,8 @@
   text-align: right;
   margin-right: 1em;
 }
+
+.Code {
+  white-space: pre;
+  font-family: monospace;
+}
