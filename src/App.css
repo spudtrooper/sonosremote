@@ -1,0 +1,31 @@
+.Volume {
+  padding: 3px;
+}
+
+.DeviceVolume {
+  margin-left: 10px;
+  font-style: italic;
+}
+
+.VolumeRow .Volume {
+  margin-left: 20px;
+}
+
+.Volume .slider-horizontal {
+  margin-left: 1em;
+  /* Not sure why we need a little more here to even out the space around the slider */
+  margin-right: 1.5em;
+}
+
+.VolumeSlider {
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.DeviceVolume {
+  min-width: 2.5em;
+  max-width: 2.5em;;
+  width: 2.5em;;
+  text-align: right;
+  margin-right: 1em;
+}
