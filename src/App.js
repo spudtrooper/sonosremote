@@ -14,6 +14,8 @@ const App = () => {
     const { protocol, hostname } = document.location;
     apiServer = `${protocol}//${hostname}:3001`;
   }
+  let buttonSize = params.get("buttonSize") || "lg";
+  let summaryOnly = params.get("summaryOnly") || false;
 
   const [state, setState] = useState({
     devices: [],
@@ -48,7 +50,7 @@ const App = () => {
   };
 
   const Button = ({ onClick, children }) =>
-    <BootstrapButton size="lg" variant="outline-dark" onClick={onClick} style={{ border: 0 }}>
+    <BootstrapButton size={buttonSize} variant="outline-dark" onClick={onClick} style={{ border: 0 }}>
       {children}
     </BootstrapButton>;
 
@@ -81,9 +83,10 @@ const App = () => {
       <Button onClick={() => send(device, "/api/volume/undo")}>
         <Back />
       </Button>
-      <Button onClick={() => showDevice(device)}>
-        <InfoSquareFill />
-      </Button>
+      {device.host &&
+        <Button onClick={() => showDevice(device)}>
+          <InfoSquareFill />
+        </Button>}
     </div>;
 
   const Devices = () =>
@@ -141,8 +144,10 @@ const App = () => {
       <div className="Controls">
         <SummaryControls device={summaryDevice} />
         <Volume device={summaryDevice} />
-        <br />
-        <Devices />
+        {!summaryOnly && <div>
+          <br />
+          <Devices />
+        </div>}
       </div>
     </div>
   );
